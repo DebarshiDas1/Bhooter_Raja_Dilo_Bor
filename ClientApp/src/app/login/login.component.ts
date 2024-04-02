@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.tenantTitle = AppConfigService.appConfig.app.title;
+    this.tenantTitle = AppConfigService.appConfig?.app?.title;
     this.form = this.fb.group({
       userName: ['', Validators.required],
       password: ['', Validators.required]

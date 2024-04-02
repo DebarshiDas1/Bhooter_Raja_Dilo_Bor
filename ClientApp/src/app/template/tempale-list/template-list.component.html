@@ -36,7 +36,7 @@
                 </div>
                 <form *ngIf="form && filterFields" [formGroup]="form" autocomplete="off" (ngSubmit)="onSearch()">
                     <div class="row">
-                        <div class="form-group row-item-full col-md-{{field.width || 12}}"
+                        <div class="form-group row-item-full col-md-{{(field.column && field.column > 0 && field.column <= 4) ? (field.column * 3) : 12}}"
                             *ngFor="let field of filterFields">
                             <ng-container [ngSwitch]="field.dataType.toLowerCase()">
                                 <mat-form-field *ngSwitchDefault class="input-form-field" appearance="fill">
@@ -73,6 +73,7 @@
                                         <mat-checkbox class="mat-check-box-field"
                                             [formControlName]="field.fieldName">{{field.label}}</mat-checkbox>
                                     </div>
+                                    <div style="height: 22px;"></div>
                                 </div>
 
                                 <div *ngSwitchCase="'radio'" class="input-form-field" appearance="fill">

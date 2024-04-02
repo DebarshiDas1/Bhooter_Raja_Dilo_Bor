@@ -113,8 +113,9 @@ export class TemplateComponent implements OnInit, OnDestroy {
       case 'boolean':
         return data ? 'Yes' : 'No';
       case 'guid': {
-        const refPropertyName = fieldName.replace('Id', ''),
-          refObject = record[refPropertyName];
+        const refProp = `${fieldName}_${fieldInfo.dataSource}`.toLowerCase(),
+          refPropertyName = record[refProp] || Object.keys(record)?.find(o => o.toLowerCase() === refProp),
+          refObject = refPropertyName ? record[refPropertyName] : null;
         return refObject?.name || this.getRefData(refObject?.$ref, this.records)?.name || data;
       }
       default:
@@ -303,6 +304,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
     this.editLayout = [];
     this.listLayout = undefined;
     this.filterFields = [];
+    this.filters = [];
     this.mappedPreviewData = [];
   }
 }

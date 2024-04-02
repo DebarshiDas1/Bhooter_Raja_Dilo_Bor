@@ -20,7 +20,7 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated Tenant
         /// </summary>
         [ForeignKey("TenantId")]
-        public Tenant? Tenant { get; set; }
+        public Tenant? TenantId_Tenant { get; set; }
 
         /// <summary>
         /// Primary key for the UserInRole 
@@ -37,7 +37,7 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated Role
         /// </summary>
         [ForeignKey("RoleId")]
-        public Role? Role { get; set; }
+        public Role? RoleId_Role { get; set; }
         /// <summary>
         /// Foreign key referencing the User to which the UserInRole belongs 
         /// </summary>
@@ -47,7 +47,7 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated User
         /// </summary>
         [ForeignKey("UserId")]
-        public User? User { get; set; }
+        public User? UserId_User { get; set; }
         /// <summary>
         /// CreatedOn of the UserInRole 
         /// </summary>
@@ -61,7 +61,7 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated User
         /// </summary>
         [ForeignKey("CreatedBy")]
-        public User? CreatedByUser { get; set; }
+        public User? CreatedBy_User { get; set; }
         /// <summary>
         /// UpdatedOn of the UserInRole 
         /// </summary>
@@ -75,6 +75,6 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated User
         /// </summary>
         [ForeignKey("UpdatedBy")]
-        public User? UpdatedByUser { get; set; }
+        public User? UpdatedBy_User { get; set; }
     }
 }

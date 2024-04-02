@@ -22,6 +22,7 @@ export class TemplatePreviewComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.dialog.closeAll();
     this.destroy.next(true);
     this.destroy.complete();
   }

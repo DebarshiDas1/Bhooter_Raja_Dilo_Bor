@@ -20,7 +20,7 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated Tenant
         /// </summary>
         [ForeignKey("TenantId")]
-        public Tenant? Tenant { get; set; }
+        public Tenant? TenantId_Tenant { get; set; }
 
         /// <summary>
         /// Primary key for the UserToken 
@@ -37,7 +37,7 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated User
         /// </summary>
         [ForeignKey("UserId")]
-        public User? User { get; set; }
+        public User? UserId_User { get; set; }
         /// <summary>
         /// RefershToken of the UserToken 
         /// </summary>

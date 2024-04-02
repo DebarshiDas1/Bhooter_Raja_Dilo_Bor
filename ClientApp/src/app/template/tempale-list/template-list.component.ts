@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EntityDataService } from 'src/app/angular-app-services/entity-data.service';
 import { Subject, takeUntil } from 'rxjs';
 import { SweetAlertService } from 'src/app/angular-app-services/sweet-alert.service';
-import { DEFAULT_PAGESIZE, _toSentenceCase } from 'src/app/library/utils';
+import { DEFAULT_PAGESIZE, RegExGuid, _toSentenceCase } from 'src/app/library/utils';
 import { Option } from '../dynamic-layout/layout-models';
 import { FormGroup } from '@angular/forms';
 import { IDataState } from './idata-state.interface';
@@ -67,6 +67,7 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.dialog.closeAll();
     this.destroy.next(true);
     this.destroy.complete();
   }
@@ -105,6 +106,7 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
   public clearAll(): boolean {
     this.form?.reset();
     this.searchTerm = '';
+    this.filter = [];
     this.filterData = [];
     this.pageNumber = 1;
     return true;
@@ -173,10 +175,19 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
     this.filter = [];
 
     this.filterData = [];
-    for (const [key, value] of Object.entries(this.form?.value)) {
+    for (const [key, value] of Object.entries(this.form?.value) as [string, any]) {
       if (value !== undefined && value !== null && value !== '' && value !== false) {
-        this.filter.push({ PropertyName: key, Operator: 'equals', Value: value });
-        this.filterData.push({ key: key, value: value as string });
+        let maskedValue = `${value}`,
+          visibleText = maskedValue;
+        if (typeof value.getMonth === 'function') {
+          maskedValue = value.toISOString();
+        } else if (typeof value === 'boolean') {
+          visibleText = `${this.filterFields.find(o => o.fieldName === key)?.label || key}: ${value ? 'Yes' : 'No'}`;
+        } else if (!RegExGuid.test(value)) {
+          visibleText = this.fieldOptions[key]?.find(x => x.value === value)?.text ?? maskedValue;
+        }
+        this.filter.push({ PropertyName: key, Operator: 'equals', Value: maskedValue });
+        this.filterData.push({ key: key, value: visibleText });
       }
     }
     this.selectedIndex = 0;

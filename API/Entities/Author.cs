@@ -11,6 +11,14 @@ namespace BhooterRajaDiloBor.Entities
     public class Author
     {
         /// <summary>
+        /// Initializes a new instance of the Author class.
+        /// </summary>
+        public Author()
+        {
+            BooksSold = -1;
+        }
+
+        /// <summary>
         /// Primary key for the Author 
         /// </summary>
         [Key]
@@ -40,5 +48,13 @@ namespace BhooterRajaDiloBor.Entities
         /// UpdatedBy of the Author 
         /// </summary>
         public Guid? UpdatedBy { get; set; }
+        /// <summary>
+        /// Location of the Author 
+        /// </summary>
+        public string? Location { get; set; }
+        /// <summary>
+        /// BooksSold of the Author 
+        /// </summary>
+        public int? BooksSold { get; set; }
     }
 }

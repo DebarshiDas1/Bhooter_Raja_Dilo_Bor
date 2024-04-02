@@ -38,7 +38,7 @@ namespace BhooterRajaDiloBor.Entities
         /// Navigation property representing the associated Author
         /// </summary>
         [ForeignKey("AuthorId")]
-        public Author? Author { get; set; }
+        public Author? AuthorId_Author { get; set; }
         /// <summary>
         /// Genre of the Books 
         /// </summary>
