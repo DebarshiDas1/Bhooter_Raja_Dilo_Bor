@@ -135,8 +135,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
         next: ([listLayout, editLayout]) => {
 
           this.editLayout = editLayout;
-          this.listLayout = listLayout.grid;
-          this.filterLayout = listLayout.filter;
+          this.listLayout = listLayout?.grid;
+          this.filterLayout = listLayout?.filter;
           this.sortField = this.listLayout?.cardTitle?.fields?.[0]?.fieldName ?? '';
           this.prepareFilterFields();
           this.loadData();

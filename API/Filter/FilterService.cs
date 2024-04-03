@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Globalization;
 using System.Linq.Expressions;
 
 namespace BhooterRajaDiloBor.Filter
@@ -25,7 +26,9 @@ namespace BhooterRajaDiloBor.Filter
             foreach (var filter in filters)
             {
                 var property = Expression.Property(parameter, filter.PropertyName);
-                var constant = Expression.Constant(Convert.ChangeType(filter.Value, property.Type));
+                var propertyType = property.Type;
+                var constantValue = ConvertValue(filter.Value, propertyType);
+                var constant = Expression.Constant(constantValue);
                 var individualFilter = GetFilterExpression(property, constant, filter.Operator);
                 if (combinedFilter == null)
                 {
@@ -57,26 +60,75 @@ namespace BhooterRajaDiloBor.Filter
 
         private static Expression GetFilterExpression(Expression property, ConstantExpression constant, string op)
         {
+            bool isNullable = property.Type.IsGenericType && property.Type.GetGenericTypeDefinition() == typeof(Nullable<>);
             switch (op.ToLower())
             {
                 case "equals":
                 case "=":
-                    return Expression.Equal(property, constant);
+                    if (isNullable)
+                    {
+                        return Expression.Equal(Expression.Property(property, "Value"), constant);
+                    }
+                    else
+                    {
+                        return Expression.Equal(property, constant);
+                    }
+
                 case "notequals":
                 case "!=":
-                    return Expression.NotEqual(property, constant);
+                    if (isNullable)
+                    {
+                        return Expression.NotEqual(Expression.Property(property, "Value"), constant);
+                    }
+                    else
+                    {
+                        return Expression.NotEqual(property, constant);
+                    }
+
                 case "greaterthan":
                 case ">":
-                    return Expression.GreaterThan(property, constant);
+                    if (isNullable)
+                    {
+                        return Expression.GreaterThan(Expression.Property(property, "Value"), constant);
+                    }
+                    else
+                    {
+                        return Expression.GreaterThan(property, constant);
+                    }
+
                 case "greaterthanorequal":
                 case ">=":
-                    return Expression.GreaterThanOrEqual(property, constant);
+                    if (isNullable)
+                    {
+                        return Expression.GreaterThanOrEqual(Expression.Property(property, "Value"), constant);
+                    }
+                    else
+                    {
+                        return Expression.GreaterThanOrEqual(property, constant);
+                    }
+
                 case "lessthan":
                 case "<":
-                    return Expression.LessThan(property, constant);
+                    if (isNullable)
+                    {
+                        return Expression.LessThan(Expression.Property(property, "Value"), constant);
+                    }
+                    else
+                    {
+                        return Expression.LessThan(property, constant);
+                    }
+
                 case "lessthanorequal":
                 case "<=":
-                    return Expression.LessThanOrEqual(property, constant);
+                    if (isNullable)
+                    {
+                        return Expression.LessThanOrEqual(Expression.Property(property, "Value"), constant);
+                    }
+                    else
+                    {
+                        return Expression.LessThanOrEqual(property, constant);
+                    }
+
                 case "default":
                     throw new NotSupportedException ( $"Operator {op} is not supported." );
             }
@@ -114,6 +166,49 @@ namespace BhooterRajaDiloBor.Filter
             var entityType = typeof(TEntity);
             var stringProperties = entityType.GetProperties().Where(p => p.PropertyType == typeof(string)).Select(p => p.Name);
             return stringProperties;
+        }
+
+        private static object ConvertValue(string value, Type targetType)
+        {
+            if (targetType == typeof(Guid? ) || targetType == typeof(Guid))
+            {
+                return Guid.Parse(value);
+            }
+            else if ((targetType == typeof(DateTime? ) || targetType == typeof(DateTime)))
+            {
+                if (DateTime.TryParseExact(value.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime constantDateTime))
+                {
+                    return constantDateTime.ToUniversalTime();
+                }
+                else
+                {
+                    throw new ArgumentException($"Failed to parse datetime value '{value}'");
+                }
+            }
+            else if (targetType == typeof(string))
+            {
+                return value;
+            }
+            else if (targetType.IsEnum)
+            {
+                return Enum.Parse(targetType, value);
+            }
+            else if (targetType == typeof(decimal? ) || targetType == typeof(decimal))
+            {
+                return decimal.Parse(value);
+            }
+            else if (targetType == typeof(int? ) || targetType == typeof(int))
+            {
+                return int.Parse(value);
+            }
+            else if (targetType == typeof(bool? ) || targetType == typeof(bool))
+            {
+                return bool.Parse(value);
+            }
+            else
+            {
+                return Convert.ChangeType(value, targetType);
+            }
         }
     }
 }

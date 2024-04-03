@@ -21,6 +21,7 @@ namespace BhooterRajaDiloBor.Data
             modelBuilder.Entity<Role>().HasKey(a => a.Id);
             modelBuilder.Entity<Author>().HasKey(a => a.Id);
             modelBuilder.Entity<Books>().HasKey(a => a.Id);
+            modelBuilder.Entity<PublishingHouse>().HasKey(a => a.Id);
             modelBuilder.Entity<UserInRole>().HasOne(a => a.TenantId_Tenant).WithMany().HasForeignKey(c => c.TenantId);
             modelBuilder.Entity<UserInRole>().HasOne(a => a.RoleId_Role).WithMany().HasForeignKey(c => c.RoleId);
             modelBuilder.Entity<UserInRole>().HasOne(a => a.UserId_User).WithMany().HasForeignKey(c => c.UserId);
@@ -41,6 +42,7 @@ namespace BhooterRajaDiloBor.Data
             modelBuilder.Entity<Role>().HasOne(a => a.CreatedBy_User).WithMany().HasForeignKey(c => c.CreatedBy);
             modelBuilder.Entity<Role>().HasOne(a => a.UpdatedBy_User).WithMany().HasForeignKey(c => c.UpdatedBy);
             modelBuilder.Entity<Books>().HasOne(a => a.AuthorId_Author).WithMany().HasForeignKey(c => c.AuthorId);
+            modelBuilder.Entity<PublishingHouse>().HasOne(a => a.BooksSold_Books).WithMany().HasForeignKey(c => c.BooksSold);
         }
 
         public DbSet<UserInRole> UserInRole { get; set; }
@@ -52,5 +54,6 @@ namespace BhooterRajaDiloBor.Data
         public DbSet<Role> Role { get; set; }
         public DbSet<Author> Author { get; set; }
         public DbSet<Books> Books { get; set; }
+        public DbSet<PublishingHouse> PublishingHouse { get; set; }
     }
 }
