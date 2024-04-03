@@ -28,14 +28,8 @@ namespace BhooterRajaDiloBor.Entities
         /// </summary>
         public int? EmployeeStrength { get; set; }
         /// <summary>
-        /// Foreign key referencing the Books to which the PublishingHouse belongs 
+        /// BooksSold of the PublishingHouse 
         /// </summary>
         public int? BooksSold { get; set; }
-
-        /// <summary>
-        /// Navigation property representing the associated Books
-        /// </summary>
-        [ForeignKey("BooksSold")]
-        public Books? BooksSold_Books { get; set; }
     }
 }
