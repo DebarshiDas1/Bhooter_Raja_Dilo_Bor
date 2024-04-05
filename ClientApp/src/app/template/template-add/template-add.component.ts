@@ -6,7 +6,7 @@ import { EntityDataService } from 'src/app/angular-app-services/entity-data.serv
 import { LayoutService } from 'src/app/angular-app-services/layout.service';
 import { Option } from '../dynamic-layout/layout-models';
 import { SweetAlertService } from 'src/app/angular-app-services/sweet-alert.service';
-import { _camelCase, _toSentenceCase } from 'src/app/library/utils';
+import { DEFAULT_PAGESIZE, _camelCase, _toSentenceCase } from 'src/app/library/utils';
 
 @Component({
   selector: 'app-template-add',
@@ -22,6 +22,12 @@ export class TemplateAddComponent implements OnInit, OnDestroy {
   form?: FormGroup;
   layoutData: any[] = [];
 
+  private filters: any[] = [];
+  private pageNumber: number = 1;
+  private pageSize: number = DEFAULT_PAGESIZE;
+  private searchTerm: string = '';
+  private sortField: string = 'name';
+  private sortOrder: string = 'asc';
   private destroy = new Subject();
 
   constructor(
@@ -162,7 +168,7 @@ export class TemplateAddComponent implements OnInit, OnDestroy {
         if (field.dataType.toLowerCase() === 'guid' && !this.fieldOptions[field.fieldName]) {
           this.fieldOptions[field.fieldName] = [];
           if (field.dataSource)
-            apis.push(this.entityDataService.getRecords(field.dataSource));
+            apis.push(this.entityDataService.getRecords(field.dataSource, this.filters, this.searchTerm, this.pageNumber, this.pageSize, this.sortField, this.sortOrder));
           else
             apis.push(of([]));
         }

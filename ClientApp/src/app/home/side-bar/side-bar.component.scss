@@ -139,6 +139,9 @@
             visibility: hidden;
             pointer-events: none;
             z-index: 100;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            @include custom-scroll;
         }
 
         .nav-link-item-wrapper {

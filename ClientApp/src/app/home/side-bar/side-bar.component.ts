@@ -38,11 +38,32 @@ export class SideBarComponent implements OnInit, OnDestroy {
 
   showSubMenu(event: MouseEvent): void {
     const targetAttr = (event.target as HTMLElement),
-      subMenuItem = (targetAttr.querySelector('.sub-nav-link') as HTMLElement);
+      subMenuItem = (targetAttr.querySelector('.sub-nav-link') as HTMLElement),
+      rect = targetAttr.getBoundingClientRect();
 
     if (subMenuItem) {
-      subMenuItem.style.top = targetAttr.getBoundingClientRect().top + 'px';
-      subMenuItem.style.left = targetAttr.getBoundingClientRect().width - 2 + 'px';
+      const subMenuRect = subMenuItem.getBoundingClientRect();
+
+      // Calculate adjusted position
+      let left = rect.left + rect.width - 2; // Adjusted left position
+      let top = rect.top;                     // Adjusted top position
+
+      // Get viewport dimensions
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      // Check if sub-nav-link will go out of viewport on the right
+      if (left + subMenuRect.width > windowWidth) {
+        left = windowWidth - subMenuRect.width;
+      }
+
+      // Check if sub-nav-link will go out of viewport on the bottom
+      if (top + subMenuRect.height > windowHeight) {
+        top = windowHeight - subMenuRect.height;
+      }
+
+      subMenuItem.style.top = `${top}px`;
+      subMenuItem.style.left = `${left}px`;
     }
   }
 
