@@ -1,13 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { TemplateAddComponent } from '../template-add/template-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EntityDataService } from 'src/app/angular-app-services/entity-data.service';
 import { Subject, takeUntil } from 'rxjs';
 import { SweetAlertService } from 'src/app/angular-app-services/sweet-alert.service';
-import { DEFAULT_PAGESIZE, RegExGuid, _toSentenceCase } from 'src/app/library/utils';
+import { DEFAULT_PAGESIZE, RegExGuid, _camelToSentenceCase, _toSentenceCase } from 'src/app/library/utils';
 import { Option } from '../dynamic-layout/layout-models';
 import { FormGroup } from '@angular/forms';
 import { IDataState } from './idata-state.interface';
+import { TooltipService } from 'src/app/angular-app-services/tooltip.service';
 
 @Component({
   selector: 'app-template-list',
@@ -29,6 +30,7 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('scrollWrapper') scrollWrapper: any;
 
+  public entityDisplayName: string = '';
   public filterData: any[] = [];
   public searchTerm: string = '';
   public sentenceCaseEntityName: string = '';
@@ -42,18 +44,22 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private dialog: MatDialog,
     private entityDataService: EntityDataService,
-    private sweetAlertService: SweetAlertService
+    private sweetAlertService: SweetAlertService,
+    private tooltipService: TooltipService,
+    private renderer: Renderer2
   ) {
   }
 
   ngOnInit(): void {
-    this.sentenceCaseEntityName = _toSentenceCase(this.entityName);
+    this.sentenceCaseEntityName = _toSentenceCase(_camelToSentenceCase(this.entityName));
+    this.entityDisplayName = _camelToSentenceCase(this.entityName);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['entityName']) {
       this.clearAll();
-      this.sentenceCaseEntityName = _toSentenceCase(this.entityName);
+      this.sentenceCaseEntityName = _toSentenceCase(_camelToSentenceCase(this.entityName));
+      this.entityDisplayName = _camelToSentenceCase(this.entityName);
     }
     setTimeout(() => {
       const inline: ScrollIntoViewOptions = { inline: 'center' };
@@ -160,6 +166,15 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
+  public truncateText(text: string): string {
+    const maxLength = 130;
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  }
+
+  public isTooltipDisabled(element: HTMLElement): boolean {
+    return this.tooltipService.isTooltipDisabled(element);
+  }
+
   public onEnterPressed(): void {
     this.pageNumber = 1;
     this.searchTerm;
@@ -183,7 +198,7 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
           maskedValue = value.toISOString();
         } else if (typeof value === 'boolean') {
           visibleText = `${this.filterFields.find(o => o.fieldName === key)?.label || key}: ${value ? 'Yes' : 'No'}`;
-        } else if (!RegExGuid.test(value)) {
+        } else if (RegExGuid.test(value)) {
           visibleText = this.fieldOptions[key]?.find(x => x.value === value)?.text ?? maskedValue;
         }
         this.filter.push({ PropertyName: key, Operator: 'equals', Value: maskedValue });
@@ -217,7 +232,7 @@ export class TemplateListComponent implements OnInit, OnChanges, OnDestroy {
         next: () => {
           this.pageNumber = 1;
           this.setRefreshData();
-          this.sweetAlertService.showSuccess(_toSentenceCase(this.entityName) + ' has been deleted.');
+          this.sweetAlertService.showSuccess(this.sentenceCaseEntityName + ' has been deleted.');
         }
       });
   }

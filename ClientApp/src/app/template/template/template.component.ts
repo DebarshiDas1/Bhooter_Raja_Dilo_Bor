@@ -109,7 +109,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
         return isNaN(date) ? data : new Date(data + 'Z').toLocaleString();
       }
       case 'numeric':
-        return new Intl.NumberFormat().format(Number(data));
+        return record[fieldName] !== undefined && record[fieldName] !== null ? new Intl.NumberFormat().format(Number(data)) : '';
       case 'boolean':
         return data ? 'Yes' : 'No';
       case 'guid': {

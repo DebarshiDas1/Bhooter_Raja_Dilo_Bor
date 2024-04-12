@@ -1,8 +1,12 @@
 <div class="main-left-list-sec">
     <div class="list-sec-top-bar d-flex justify-content-between">
-        <h1 class="font-section-title-medium">{{sentenceCaseEntityName}}</h1>
+        <h1 class="font-section-title-medium" #entityNameText matTooltip={{sentenceCaseEntityName}}
+            [matTooltipDisabled]="isTooltipDisabled(entityNameText)">{{sentenceCaseEntityName}}</h1>
         <button mat-button class="ec-primary-btn add-list-btn" (click)='addRecord()'>
-            <span class="material-icons icon-btn">add</span>Add {{entityName}}
+            <span class="material-icons icon-btn">add</span>
+            <div class="add-list-btn-text" #addListTextButton matTooltip="Add {{entityDisplayName}}"
+                [matTooltipDisabled]="isTooltipDisabled(addListTextButton)">{{truncateText("Add " + entityDisplayName)}}
+            </div>
         </button>
     </div>
     <div class="list-sec-search">

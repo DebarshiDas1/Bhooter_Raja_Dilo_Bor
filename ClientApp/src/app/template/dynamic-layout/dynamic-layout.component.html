@@ -24,7 +24,8 @@
                             <!-- Textbox -->
                             <mat-form-field *ngSwitchDefault class="input-form-field input-flds field-pb-0">
                                 <mat-label>{{field.label}}</mat-label>
-                                <input matInput [formControlName]="field.fieldName" [required]="field.required">
+                                <input matInput [formControlName]="field.fieldName" [required]="field.required"
+                                    [id]="field.fieldName">
                                 <mat-error>{{field.label}} is
                                     required.</mat-error>
                             </mat-form-field>
@@ -32,16 +33,26 @@
                             <!-- Numeric -->
                             <mat-form-field *ngSwitchCase="'numeric'" class="input-form-field input-flds field-pb-0">
                                 <mat-label>{{field.label}}</mat-label>
-                                <input matInput type="number" [formControlName]="field.fieldName"
+                                <input matInput type="number" [formControlName]="field.fieldName" [id]="field.fieldName"
                                     [required]="field.required">
-                                <mat-error>{{field.label}} is required.</mat-error>
+                                <mat-error
+                                    *ngIf="form.get(field.fieldName)?.hasError('required') && form.get(field.fieldName)?.touched">{{field.label}}
+                                    is required.</mat-error>
+                                <mat-error *ngIf="form.get(field.fieldName)?.hasError('pattern')">
+                                    <ng-container *ngIf="field.scale > 0">
+                                        The value can only have up to {{field.scale}} decimal places.
+                                    </ng-container>
+                                    <ng-container *ngIf="!field.scale">
+                                        The value must be an integer.
+                                    </ng-container>
+                                </mat-error>
                             </mat-form-field>
 
                             <!-- Date -->
                             <mat-form-field *ngSwitchCase="'datetime'" class="input-form-field input-flds field-pb-0">
                                 <mat-label>{{field.label}}</mat-label>
                                 <input matInput [formControlName]="field.fieldName" [matDatepicker]="picker"
-                                    [required]="field.required" placeholder="MM/DD/YYYY">
+                                    [id]="field.fieldName" [required]="field.required" placeholder="MM/DD/YYYY">
                                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                 <mat-datepicker #picker></mat-datepicker>
                                 <mat-error>{{field.label}} is required.</mat-error>
@@ -50,7 +61,8 @@
                             <!-- Dropdown -->
                             <mat-form-field *ngSwitchCase="'guid'" class="input-form-field input-flds field-pb-0">
                                 <mat-label>{{field.label}}</mat-label>
-                                <mat-select [formControlName]="field.fieldName" [required]="field.required">
+                                <mat-select [formControlName]="field.fieldName" [required]="field.required"
+                                    [id]="field.fieldName">
                                     <mat-option [value]="null">Select</mat-option>
                                     <mat-option *ngFor="let option of fieldOptions[field.fieldName]"
                                         [value]="option.value">{{ option.text }}</mat-option>
@@ -61,7 +73,7 @@
                             <!-- Checkbox -->
                             <div *ngSwitchCase="'boolean'" class="input-form-field mat-mdc-form-field">
                                 <div class="mdc-text-field">
-                                    <mat-checkbox class="mat-check-box-field"
+                                    <mat-checkbox class="mat-check-box-field" [id]="field.fieldName"
                                         [formControlName]="field.fieldName">{{field.label}}</mat-checkbox>
                                 </div>
                             </div>

@@ -27,15 +27,15 @@
             position: relative;
         }
 
-        .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0px;
-            left: 0;
-            width: 70px;
-            height: 2px;
-            background-color: var(--primary-color-darker);
-        }
+        // .section-header::after {
+        //     content: '';
+        //     position: absolute;
+        //     bottom: 0px;
+        //     left: 0;
+        //     width: 70px;
+        //     height: 2px;
+        //     background-color: var(--primary-color-darker);
+        // }
     }
 
     .preview-data {

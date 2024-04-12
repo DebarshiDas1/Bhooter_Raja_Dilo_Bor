@@ -9,10 +9,33 @@
     }
 }
 
+.list-sec-top-bar {
+    flex-direction: row;
+    gap: 15px;
+
+    .font-section-title-medium {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.details-area,
+.status-area {
+    max-width: 340px;
+}
 
 
 .add-list-btn {
     margin-right: 25px;
+
+    .add-list-btn-text {
+        max-width: 130px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
 }
 
 

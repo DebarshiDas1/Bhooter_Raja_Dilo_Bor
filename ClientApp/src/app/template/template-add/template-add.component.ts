@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Observable, Subject, forkJoin, of, takeUntil } from 'rxjs';
@@ -6,7 +6,7 @@ import { EntityDataService } from 'src/app/angular-app-services/entity-data.serv
 import { LayoutService } from 'src/app/angular-app-services/layout.service';
 import { Option } from '../dynamic-layout/layout-models';
 import { SweetAlertService } from 'src/app/angular-app-services/sweet-alert.service';
-import { DEFAULT_PAGESIZE, _camelCase, _toSentenceCase } from 'src/app/library/utils';
+import { DEFAULT_PAGESIZE, _camelCase, _camelToSentenceCase, _toSentenceCase } from 'src/app/library/utils';
 
 @Component({
   selector: 'app-template-add',
@@ -18,9 +18,10 @@ export class TemplateAddComponent implements OnInit, OnDestroy {
   @Input() id: string = '';
   @Output() saved = new EventEmitter<boolean>();
 
-  fieldOptions: { [key: string]: Option[]; } = {};
-  form?: FormGroup;
-  layoutData: any[] = [];
+  public entityDisplayName: string = '';
+  public fieldOptions: { [key: string]: Option[]; } = {};
+  public form?: FormGroup;
+  public layoutData: any[] = [];
 
   private filters: any[] = [];
   private pageNumber: number = 1;
@@ -34,11 +35,13 @@ export class TemplateAddComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<TemplateAddComponent>,
     private entityDataService: EntityDataService,
     private layoutService: LayoutService,
-    private sweetAlertService: SweetAlertService
+    private sweetAlertService: SweetAlertService,
+    private renderer: Renderer2
   ) {
   }
 
   ngOnInit(): void {
+    this.entityDisplayName = _camelToSentenceCase(this.entityName);
     this.getLayout(this.entityName, this.id ? 'Edit' : 'Add');
   }
 
@@ -52,21 +55,34 @@ export class TemplateAddComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
+    const isValid = this.formValidation();
+    if (!isValid) return;
     const data = this.form?.value;
     if (this.id) {
       data.id = this.id;
     }
     const apiCall = this.id ? this.entityDataService.editRecordById(this.entityName, this.id, data) : this.entityDataService.addRecord(this.entityName, data);
-
     apiCall.pipe(takeUntil(this.destroy))
       .subscribe({
         next: data => {
           if (data) {
-            this.sweetAlertService.showSuccess(`${_toSentenceCase(this.entityName)} has been ${this.id ? 'updated' : 'added'}.`);
+            this.sweetAlertService.showSuccess(`${_toSentenceCase(_camelToSentenceCase(this.entityName))} has been ${this.id ? 'updated' : 'added'}.`);
             this.saved.emit(true);
           }
         }
       });
+  }
+
+  private formValidation(): boolean {
+    if (!this.form?.valid) {
+      for (const hasErrorIn in this.form?.controls) {
+        if (this.form.controls[hasErrorIn].errors) {
+          this.renderer?.selectRootElement(`#${hasErrorIn}`)?.focus();
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   private getDefaultValue(field: any): any {
